@@ -4,7 +4,17 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/joho/godotenv"
 )
+
+type Book struct {
+	title string
+	author string
+	publish_date int
+	cover string
+}
+
+var Books []*Book
 
 func main() {
 	router := gin.Default()
