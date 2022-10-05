@@ -8,8 +8,8 @@ import (
 	"os"
 
 	"github.com/gin-gonic/gin"
-	"github.com/go-playground/validator/v10/translations/id"
 	"github.com/joho/godotenv"
+	_ "github.com/lib/pq"
 )
 
 type Book struct {
@@ -26,10 +26,11 @@ const DB_NAME = "bookstore"
 
 func main() {
 	// Setup Environment
-	err := godotenv.Load()
+	err := godotenv.Load("../.env")
 	if err != nil {
 		log.Fatal("Failed to load .env file")
 	}
+	log.Println()
 
 	// Setup Gin
 	router := gin.Default()
@@ -45,12 +46,26 @@ func main() {
 	}
 	defer db.Close()
 
+	// Get books
+	rows, err := db.Query("SELECT * FROM books;")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		log.Println()
+	}
+	
 	// Example GET
 	api.GET("/ping", func(ctx *gin.Context) {
 		ctx.JSON(http.StatusOK, gin.H{
 			"message": "pong",
 		})
 	})
+
+
+	fmt.Println(rows)
 
 	router.Run(":9333")
 }
