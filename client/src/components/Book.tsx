@@ -18,7 +18,7 @@ function Book() {
   const [coverImage, setCoverImage] = useState(0);
 
 
-  async function fetchBookData(url) {
+  async function fetchBookData(url: string) {
     try {
       const response = await fetch(url);
       const json = await response.json();
@@ -32,7 +32,8 @@ function Book() {
   }
   fetchBookData(bookURL);
 
-
+  // Author Stuff
+  // TODO move to another file
 
   // async function fetchAuthorData(url) {
   //   try {
