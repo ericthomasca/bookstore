@@ -9,6 +9,7 @@ function Navigation() {
         <Nav>
           <Nav.Link href="/">Home</Nav.Link>
           <Nav.Link href="/add">Add Book</Nav.Link>
+          <Nav.Link href="/404">404 Test</Nav.Link>
         </Nav>
       </Container>
     </Navbar>
