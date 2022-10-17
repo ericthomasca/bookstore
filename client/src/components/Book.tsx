@@ -15,7 +15,7 @@ function Book() {
   const [title, setTitle] = useState("");
   const [author, setAuthor] = useState("");
   const [publishYear, setPublishYear] = useState(0);
-  const [coverImage, setCoverImage] = useState(0);
+  const [coverID, setCoverID] = useState(0);
 
 
   async function fetchBookData(url: string) {
@@ -25,7 +25,7 @@ function Book() {
       setTitle(json.title);
       setAuthor(json.authors[0].author.key);
       setPublishYear(1983);
-      setCoverImage(json.covers[0]);
+      setCoverID(json.covers[0]);
     } catch (error) {
       console.log("Error", error);
     }
@@ -35,26 +35,29 @@ function Book() {
   // Author Stuff
   // TODO move to another file
 
-  // async function fetchAuthorData(url) {
-  //   try {
-  //     const response = await fetch(url);
-  //     const json = await response.json();
-  //     setTitle(json.title);
-  //     setAuthor(json.authors[0].author.key);
-  //     setPublishYear(1983);
-  //     setCoverImage(json.covers[0]);
-  //   } catch (error) {
-  //     console.log("Error", error);
-  //   }
-  // }
-  // fetchAuthorData(url);
+  let authorURL = baseURL + author + ".json";
+
+  const [authorName, setAuthorName] = useState("");
+
+  async function fetchAuthorData(url: string) {
+    try {
+      const response = await fetch(url);
+      const json = await response.json();
+      setAuthorName(json.name);
+    } catch (error) {
+      console.log("Error", error);
+    }
+  }
+  fetchAuthorData(authorURL);
+
+  let imageSize = "M" // S, M, L
+  let coverURL = "https://covers.openlibrary.org/b/id/" + coverID + "-" + imageSize + ".jpg";
 
   return (
     <Container fluid>
-      <h3>{title}</h3>
-      <p>{author}</p>
-      <p>{publishYear}</p>
-      <p>{coverImage}</p>
+      <h3>{title} by {authorName}</h3>
+      <p>Published in {publishYear}</p>
+      <img src={coverURL} alt="Cover" />
     </Container>
   );
 }
