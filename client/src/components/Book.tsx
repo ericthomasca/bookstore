@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Container from "react-bootstrap/Container";
 
 function Book() {
@@ -16,6 +16,7 @@ function Book() {
   const [author, setAuthor] = useState("");
   const [publishYear, setPublishYear] = useState(0);
   const [coverID, setCoverID] = useState(0);
+  const [bookDescription, setBookDescription] = useState("");
 
 
   async function fetchBookData(url: string) {
@@ -26,6 +27,7 @@ function Book() {
       setAuthor(json.authors[0].author.key);
       setPublishYear(1983);
       setCoverID(json.covers[0]);
+      setBookDescription(json.description);
     } catch (error) {
       console.log("Error", error);
     }
@@ -55,9 +57,11 @@ function Book() {
 
   return (
     <Container fluid>
-      <h3>{title} by {authorName}</h3>
+      <h3>{title}</h3>
+      <h5>By {authorName}</h5>
       <p>Published in {publishYear}</p>
       <img src={coverURL} alt="Cover" />
+      <p>{bookDescription}</p>
     </Container>
   );
 }
