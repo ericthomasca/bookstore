@@ -1,23 +1,23 @@
+import "./Book.css"
 import { useState } from "react";
 import Container from "react-bootstrap/Container";
+import Row from "react-bootstrap/Row";
+import Col from "react-bootstrap/Col";
+import Image from "react-bootstrap/Image";
 
-function Book() {
-
+function Book(props: { id: string }) {
+  
   const baseURL = "https://openlibrary.org";
-
-  // TODO get from search later
-  let bookSuffix = "/works/OL45804W";
+  
+  let id = props.id;
+  let bookSuffix = "/works/" + id;
 
   // Book Stuff
-  // TODO move to another file
   let bookURL = baseURL + bookSuffix + ".json";
 
   const [title, setTitle] = useState("");
   const [author, setAuthor] = useState("");
-  const [publishYear, setPublishYear] = useState(0);
   const [coverID, setCoverID] = useState(0);
-  const [bookDescription, setBookDescription] = useState("");
-
 
   async function fetchBookData(url: string) {
     try {
@@ -25,9 +25,7 @@ function Book() {
       const json = await response.json();
       setTitle(json.title);
       setAuthor(json.authors[0].author.key);
-      setPublishYear(1983);
       setCoverID(json.covers[0]);
-      setBookDescription(json.description);
     } catch (error) {
       console.log("Error", error);
     }
@@ -35,8 +33,6 @@ function Book() {
   fetchBookData(bookURL);
 
   // Author Stuff
-  // TODO move to another file
-
   let authorURL = baseURL + author + ".json";
 
   const [authorName, setAuthorName] = useState("");
@@ -52,16 +48,27 @@ function Book() {
   }
   fetchAuthorData(authorURL);
 
-  let imageSize = "M" // S, M, L
-  let coverURL = "https://covers.openlibrary.org/b/id/" + coverID + "-" + imageSize + ".jpg";
+  let imageSize = "M"; // S, M, L
+  let coverURL =
+    "https://covers.openlibrary.org/b/id/" + coverID + "-" + imageSize + ".jpg";
 
   return (
     <Container fluid>
-      <h3>{title}</h3>
-      <h5>By {authorName}</h5>
-      <p>Published in {publishYear}</p>
-      <img src={coverURL} alt="Cover" />
-      <p>{bookDescription}</p>
+      <br></br>
+      {/* <Row> */}
+        {/* <Col> */}
+          <Image className="book-cover" src={coverURL} width="72" height="110" alt="Cover" />
+        {/* </Col> */}
+        {/* <Col> */}
+          <h3>{title}</h3>
+          <h5>{authorName}</h5>
+          <br></br>
+          <br></br>
+          <hr></hr>
+        {/* </Col> */}
+        {/* <Col></Col> */}
+      {/* </Row> */}
+      {/* <hr></hr> */}
     </Container>
   );
 }
