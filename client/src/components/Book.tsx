@@ -1,8 +1,6 @@
 import "./Book.css"
 import { useState } from "react";
 import Container from "react-bootstrap/Container";
-import Row from "react-bootstrap/Row";
-import Col from "react-bootstrap/Col";
 import Image from "react-bootstrap/Image";
 
 function Book(props: { id: string }) {
@@ -55,20 +53,12 @@ function Book(props: { id: string }) {
   return (
     <Container fluid>
       <br></br>
-      {/* <Row> */}
-        {/* <Col> */}
-          <Image className="book-cover" src={coverURL} width="72" height="110" alt="Cover" />
-        {/* </Col> */}
-        {/* <Col> */}
-          <h3>{title}</h3>
-          <h5>{authorName}</h5>
-          <br></br>
-          <br></br>
-          <hr></hr>
-        {/* </Col> */}
-        {/* <Col></Col> */}
-      {/* </Row> */}
-      {/* <hr></hr> */}
+      <Image className="book-cover" src={coverURL} width="72" height="110" alt="Cover" />
+      <h3>{title}</h3>
+      <h5>{authorName}</h5>
+      <br></br>
+      <br></br>
+      <hr></hr>
     </Container>
   );
 }
