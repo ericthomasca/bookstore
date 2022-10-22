@@ -6,19 +6,13 @@ import Image from "react-bootstrap/Image"
 function SearchPage() {
   const searchBaseURL = "https://openlibrary.org/search.json?q=";
   const [searchQuery, setSearchQuery] = useState("");
-
-  let resultsURL = "";
-
-  function searchBook(event: { preventDefault: () => void; }) {
-    event.preventDefault();
-    resultsURL = searchBaseURL + searchQuery.split(" ").join("+");
-    console.log(resultsURL);
-    fetchSearchResults(resultsURL);
-  }
-
   const [resultTitle, setResultTitle] = useState("");
   const [resultAuthor, setResultAuthor] = useState("");
   const [resultCoverID, setResultCoverID] = useState(0);
+
+  let resultsURL = "";
+  let imageSize = "M"; // S, M, L
+  let coverURL = "https://covers.openlibrary.org/b/id/" + resultCoverID + "-" + imageSize + ".jpg";
 
   async function fetchSearchResults(url: string) {
     try {
@@ -32,11 +26,14 @@ function SearchPage() {
       console.log("Error", error);
     }
   }
+  
+  function searchBook(event: { preventDefault: () => void; }) {
+    event.preventDefault();
+    resultsURL = searchBaseURL + searchQuery.split(" ").join("+");
+    console.log(resultsURL);
+    fetchSearchResults(resultsURL);
+  }
 
-  let imageSize = "M"; // S, M, L
-
-  let coverURL =
-    "https://covers.openlibrary.org/b/id/" + resultCoverID + "-" + imageSize + ".jpg";
 
   return (
     <>
