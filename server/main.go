@@ -1,28 +1,26 @@
 package main
 
 import (
-	"database/sql"
+	"context"
 	"fmt"
 	"log"
 	"net/http"
 	"os"
 
 	"github.com/gin-gonic/gin"
+	"github.com/jackc/pgx/v5"
 	"github.com/joho/godotenv"
-	_ "github.com/lib/pq"
 )
 
 type Book struct {
-	id				int
-	title 			string
-	author 			string
-	publish_date 	int
-	cover 			string
+	id           int
+	title        string
+	author       string
+	publish_date int
+	cover        string
 }
 
 var Books []*Book
-
-const DB_NAME = "bookstore"
 
 func main() {
 	// Setup Environment
@@ -37,26 +35,35 @@ func main() {
 	api := router.Group("/api")
 
 	// Connect to Database
-	dbinfo := fmt.Sprintf("user=%s password=%s dbname=%s sslmode=disable",
-		os.Getenv("POSTGRES_USER"), os.Getenv("POSTGRES_PASS"), DB_NAME)
-	
-	db, err := sql.Open("postgres", dbinfo)
+	conn, err := pgx.Connect(context.Background(), os.Getenv("DATABASE_URL"))
 	if err != nil {
-		log.Fatal("Failed to load database.")
+		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
+		os.Exit(1)
 	}
-	defer db.Close()
+	defer conn.Close(context.Background())
+
+	// Get first row as example
+	var title string
+	var author string
+	err = conn.QueryRow(context.Background(), "select title, author from books where id=$1", 1).Scan(&title, &author)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "QueryRow failed: %v\n", err)
+		os.Exit(1)
+	}
+
+	fmt.Println(title, author)
 
 	// Get books
-	rows, err := db.Query("SELECT * FROM books;")
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer rows.Close()
+	// rows, err := db.Query("SELECT * FROM books;")
+	// if err != nil {
+	// 	log.Fatal(err)
+	// }
+	// defer rows.Close()
 
-	for rows.Next() {
-		log.Println()
-	}
-	
+	// for rows.Next() {
+	// 	log.Println()
+	// }
+
 	// Example GET
 	api.GET("/ping", func(ctx *gin.Context) {
 		ctx.JSON(http.StatusOK, gin.H{
@@ -64,9 +71,7 @@ func main() {
 		})
 	})
 
-
-	fmt.Println(rows)
+	// fmt.Println(rows)
 
 	router.Run(":9333")
 }
-
