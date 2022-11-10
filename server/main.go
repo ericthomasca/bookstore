@@ -4,20 +4,20 @@ import (
 	"context"
 	"fmt"
 	"log"
-	"net/http"
+	"strconv"
+
+	// "net/http"
 	"os"
 
-	"github.com/gin-gonic/gin"
+	// "github.com/gin-gonic/gin"
 	"github.com/jackc/pgx/v5"
 	"github.com/joho/godotenv"
+	// TODO reenable imports
 )
 
 type Book struct {
-	id           int
 	title        string
 	author       string
-	publish_date int
-	cover        string
 }
 
 var Books []*Book
@@ -31,8 +31,9 @@ func main() {
 	log.Println()
 
 	// Setup Gin
-	router := gin.Default()
-	api := router.Group("/api")
+	// router := gin.Default()
+	// api := router.Group("/api")
+	// TODO turn back on
 
 	// Connect to Database
 	conn, err := pgx.Connect(context.Background(), os.Getenv("DATABASE_URL"))
@@ -42,16 +43,36 @@ func main() {
 	}
 	defer conn.Close(context.Background())
 
-	// Get first row as example
-	var title string
-	var author string
-	err = conn.QueryRow(context.Background(), "select title, author from books where id=$1", 1).Scan(&title, &author)
+	// Get table size
+	var count int
+
+	err = conn.QueryRow(context.Background(), "select count(*) from books").Scan(&count)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "QueryRow failed: %v\n", err)
 		os.Exit(1)
 	}
 
-	fmt.Println(title, author)
+	number_of_books := strconv.Itoa(count)
+	fmt.Println("Number of books: " + number_of_books)
+
+	// Get every book and add to Books array
+	for i := 1; i <= count; i++ {
+		var title string
+		var author string
+		var book Book
+
+		err = conn.QueryRow(context.Background(), "select title, author from books where id=$1", i).Scan(&title, &author)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "QueryRow failed: %v\n", err)
+			os.Exit(1)
+		}
+		fmt.Println(title + " -- " + author)
+		book.author = author
+		book.title = title
+		Books = append(Books, &book)
+	}
+
+	// TODO use Books array to feed books to Gin
 
 	// Get books
 	// rows, err := db.Query("SELECT * FROM books;")
@@ -65,13 +86,13 @@ func main() {
 	// }
 
 	// Example GET
-	api.GET("/ping", func(ctx *gin.Context) {
-		ctx.JSON(http.StatusOK, gin.H{
-			"message": "pong",
-		})
-	})
+	// api.GET("/ping", func(ctx *gin.Context) {
+	// 	ctx.JSON(http.StatusOK, gin.H{
+	// 		"message": "pong",
+	// 	})
+	// })
 
 	// fmt.Println(rows)
 
-	router.Run(":9333")
+// 	router.Run(":9333")
 }
